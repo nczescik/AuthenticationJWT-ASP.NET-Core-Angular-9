@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using WebAPI.DAL;
 using WebAPI.DAL.Interfaces;
 using WebAPI.DAL.Repositories;
 using WebAPI.Extensions;
+using WebAPI.Services.Services.Users;
 
 namespace WebAPI.Extensions
 {
@@ -18,6 +20,8 @@ namespace WebAPI.Extensions
         {
             services.AddScoped<ApplicationDbContext>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<Func<IUserService>>(x => () => x.GetService<IUserService>());
             return services;
         }
 
@@ -56,7 +60,7 @@ namespace WebAPI.Extensions
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                spa.Options.SourcePath = "dist";
+                spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
                 {
