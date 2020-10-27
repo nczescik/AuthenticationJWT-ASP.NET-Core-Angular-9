@@ -24,6 +24,9 @@ namespace WebAPI
                 .AddDependencyInjection()
                 .AddSpaStaticFiles()
                 .AddDbContext(Configuration)
+                .ConfigureAppSettingsService(Configuration)
+                .AddJwt(Configuration)
+                .AddSwagger()
                 .AddControllers();
         }
 
@@ -32,19 +35,22 @@ namespace WebAPI
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage()
+                    .UseSwaggerExt();
             }
             else
             {
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-                app.UseSpaStaticFiles();
+                app.UseHsts()
+                    .UseSpaStaticFiles();
             }
 
             app.UseHttpsRedirection()
                 .UseStaticFiles()
                 .UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
                 .UserEndpoints()
                 .UseSpa(env);
 
