@@ -1,0 +1,29 @@
+.registrationPanel {
+    background-color: white;
+    padding: 40px;
+    align-content: center;
+    color: black;
+    font-family: sans-serif;
+    border-bottom-left-radius: 2%;
+    border-bottom-right-radius: 2%;
+    height: 30em;
+}
+
+.createAccountLabel {
+    align-content: center;
+    font-size: 25px;
+    transform:scale(1, 0.9);
+    -webkit-transform: scale(1, 0.9); /* Safari and Chrome */
+    -moz-transform: scale(1, 0.9); /* Firefox */
+    -ms-transform: scale(1, 0.9); /* IE 9+ */
+    -o-transform: scale(1, 0.9); /* Opera */
+}
+
+.form-group {
+    padding: 5px;
+}
+ 
+.btn {
+    background-color: darkseagreen;
+    color: white;
+}

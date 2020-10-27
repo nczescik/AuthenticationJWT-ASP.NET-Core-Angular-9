@@ -129,6 +129,19 @@ namespace WebAPI.Extensions
             return services;
         }
 
+        public static IApplicationBuilder UseCorsExt(this IApplicationBuilder app, IConfiguration configuration)
+        {
+            var appSettingsSection = configuration.GetSection("AppSettings");
+            var appSettings = appSettingsSection.Get<AppSettings>();
+
+            app.UseCors(builder =>
+                builder.WithOrigins()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+
+            return app;
+        }
+
         public static IApplicationBuilder UserEndpoints(this IApplicationBuilder app)
         {
             app.UseEndpoints(endpoints =>

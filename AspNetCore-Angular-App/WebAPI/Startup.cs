@@ -27,6 +27,7 @@ namespace WebAPI
                 .ConfigureAppSettingsService(Configuration)
                 .AddJwt(Configuration)
                 .AddSwagger()
+                //.AddCors()
                 .AddControllers();
         }
 
@@ -49,6 +50,7 @@ namespace WebAPI
             app.UseHttpsRedirection()
                 .UseStaticFiles()
                 .UseRouting()
+                //.UseCorsExt(Configuration)
                 .UseAuthentication()
                 .UseAuthorization()
                 .UserEndpoints()
