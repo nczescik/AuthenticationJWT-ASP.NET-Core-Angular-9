@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using WebAPI.DAL;
-using WebAPI.DAL.Interfaces;
-using WebAPI.DAL.Repositories;
 using WebAPI.Extensions;
 
 namespace WebAPI

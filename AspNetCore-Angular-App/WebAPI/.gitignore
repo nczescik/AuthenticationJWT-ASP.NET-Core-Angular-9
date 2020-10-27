@@ -159,6 +159,11 @@ rcf/
 # Microsoft Azure ApplicationInsights config file
 ApplicationInsights.config
 
+#Azure publish
+profile.arm.json
+serviceDependencies.AspNetCore-Angular-App - Web Deploy.json
+serviceDependencies.json
+
 # Windows Store app package directory
 AppPackages/
 BundleArtifacts/
