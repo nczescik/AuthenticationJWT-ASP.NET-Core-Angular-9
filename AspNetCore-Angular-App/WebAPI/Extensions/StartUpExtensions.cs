@@ -131,11 +131,12 @@ namespace WebAPI.Extensions
 
         public static IApplicationBuilder UseCorsExt(this IApplicationBuilder app, IConfiguration configuration)
         {
-            var appSettingsSection = configuration.GetSection("AppSettings");
-            var appSettings = appSettingsSection.Get<AppSettings>();
+            //var appSettingsSection = configuration.GetSection("AppSettings");
+            //var appSettings = appSettingsSection.Get<AppSettings>();
 
             app.UseCors(builder =>
-                builder.WithOrigins()
+                builder
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod());
 

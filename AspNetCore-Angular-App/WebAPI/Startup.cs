@@ -27,7 +27,7 @@ namespace WebAPI
                 .ConfigureAppSettingsService(Configuration)
                 .AddJwt(Configuration)
                 .AddSwagger()
-                //.AddCors()
+                .AddCors()
                 .AddControllers();
         }
 
@@ -37,7 +37,8 @@ namespace WebAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage()
-                    .UseSwaggerExt();
+                    .UseSwaggerExt()
+                    .UseCorsExt(Configuration);
             }
             else
             {
@@ -50,7 +51,6 @@ namespace WebAPI
             app.UseHttpsRedirection()
                 .UseStaticFiles()
                 .UseRouting()
-                //.UseCorsExt(Configuration)
                 .UseAuthentication()
                 .UseAuthorization()
                 .UserEndpoints()

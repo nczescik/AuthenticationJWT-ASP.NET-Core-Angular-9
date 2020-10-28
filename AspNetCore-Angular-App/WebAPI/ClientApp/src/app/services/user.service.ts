@@ -12,20 +12,25 @@ export class UserService {
   readonly BaseUrl = environment.baseUrl;
 
   formModel = this.fb.group({
-    FirstName: [''],
-    LastName: [''],
-    UserName: [''],
-    Password: ['']
+    UserName: '',
+    Password: '',
+    ConfirmPassword: ''
   })
 
   register() {
     var body = {
-      FirstName: this.formModel.value.FirstName,
-      LastName: this.formModel.value.LastName,
       UserName: this.formModel.value.UserName,
       Password: this.formModel.value.Password,
+      ConfirmPassword: this.formModel.value.ConfirmPassword
     }
-
     return this.http.post(this.BaseUrl + '/Users/Register', body).subscribe();
+  }
+
+  login() {
+    var body = {
+      UserName: this.formModel.value.UserName,
+      Password: this.formModel.value.Password
+    }
+    return this.http.post(this.BaseUrl + '/Users/Login', body).subscribe();
   }
 }
