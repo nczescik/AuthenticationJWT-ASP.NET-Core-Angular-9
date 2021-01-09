@@ -20,7 +20,9 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.service.login(this.loginForm.value).subscribe();
+    this.service.login(this.loginForm.value).subscribe(data => {
+      this.service.saveToken(data.token);
+    });
     this.loginForm.reset();
   }
 
