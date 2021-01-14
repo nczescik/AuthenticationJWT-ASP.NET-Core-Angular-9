@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/Authentication/auth.service';
+import { ValidationService } from 'src/app/services/Validation/validation.service';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +10,9 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(private fb: FormBuilder, public authService: AuthService) {
+  constructor(private fb: FormBuilder,
+    private authService: AuthService,
+    private validationService: ValidationService) {
     this.loginForm = this.fb.group({
       'UserName': ['', Validators.required],
       'Password': ['', Validators.required]
@@ -20,17 +23,21 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.authService.login(this.loginForm.value).subscribe(data => {
-      this.authService.saveToken(data.token);
-    });
-    this.loginForm.reset();
+    if (this.loginForm.valid) {
+      this.authService.login(this.loginForm.value).subscribe(data => {
+        this.authService.saveToken(data.token);
+      });
+      this.loginForm.reset();
+    } else {
+      this.validationService.validateAllFormFields(this.loginForm);
+    }
   }
 
-  get username(){
+  get username() {
     return this.loginForm.get('UserName');
   }
 
-  get password(){
+  get password() {
     return this.loginForm.get('Password');
   }
 }

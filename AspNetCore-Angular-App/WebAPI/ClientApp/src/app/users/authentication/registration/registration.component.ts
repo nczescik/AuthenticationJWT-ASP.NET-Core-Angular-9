@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/Authentication/auth.service';
+import { ValidationService } from 'src/app/services/Validation/validation.service';
 
 @Component({
   selector: 'app-registration',
@@ -9,7 +10,9 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class RegistrationComponent implements OnInit {
   registerForm: FormGroup;
-  constructor(private fb: FormBuilder, public authService: AuthService) { 
+  constructor(private fb: FormBuilder,
+    private authService: AuthService,
+    private validationService: ValidationService) {
     this.registerForm = this.fb.group({
       'UserName': ['', Validators.required],
       'Password': ['', Validators.required],
@@ -21,19 +24,23 @@ export class RegistrationComponent implements OnInit {
   }
 
   register() {
-    this.authService.register(this.registerForm.value).subscribe();
-    this.registerForm.reset();
+    if (this.registerForm.valid) {
+      this.authService.register(this.registerForm.value).subscribe();
+      this.registerForm.reset();
+    } else {
+      this.validationService.validateAllFormFields(this.registerForm);
+    }
   }
 
-  get username(){
+  get username() {
     return this.registerForm.get('UserName');
   }
 
-  get password(){
+  get password() {
     return this.registerForm.get('Password');
   }
 
-  get confirmPassword(){
+  get confirmPassword() {
     return this.registerForm.get('ConfirmPassword');
   }
 
