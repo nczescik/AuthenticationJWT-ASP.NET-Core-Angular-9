@@ -13,14 +13,17 @@ export class RegistrationComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private authService: AuthService,
     private validationService: ValidationService) {
-    this.registerForm = this.fb.group({
-      'UserName': ['', Validators.required],
-      'Password': ['', Validators.required],
-      'ConfirmPassword': ['', Validators.required]
-    });
+
   }
 
   ngOnInit(): void {
+    this.registerForm = this.fb.group({
+      'UserName': ['', Validators.required],
+      'Password': ['', Validators.required],
+      'ConfirmPassword': ['', Validators.required,]
+    }, {
+      validator: this.validationService.mustMatch('Password', 'ConfirmPassword')
+    });
   }
 
   register() {
@@ -43,5 +46,4 @@ export class RegistrationComponent implements OnInit {
   get confirmPassword() {
     return this.registerForm.get('ConfirmPassword');
   }
-
 }

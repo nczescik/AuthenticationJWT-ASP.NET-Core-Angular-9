@@ -36,9 +36,6 @@ namespace WebAPI.Controllers
         {
             var user = _userService().Authenticate(model.Username, model.Password);
 
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -72,15 +69,8 @@ namespace WebAPI.Controllers
                 Password = model.Password
             };
 
-            try
-            {
-                _userService().CreateUser(user);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            _userService().CreateUser(user);
+            return Ok();
         }
 
         [HttpGet("GetUser/{userId}")]

@@ -5,23 +5,27 @@
         </div>
         <div style="padding: 20px;">
             <div class="form-group">
-                <input type="text" formControlName="UserName" class="form-control" placeholder="Username" [ngClass]="{'is-invalid': username.errors && (username.touched || username.dirty)}">
+                <input type="text" formControlName="UserName" class="form-control" placeholder="Username"
+                    [ngClass]="{'is-invalid': username.errors && (username.touched || username.dirty)}">
                 <div class="invalid-feedback">
                     Username is required.
                 </div>
             </div>
             <div class="form-group">
-                <input type="password" formControlName="Password" class="form-control" placeholder="Password" [ngClass]="{'is-invalid': password.errors && (password.touched || password.dirty)}">
+                <input type="password" formControlName="Password" class="form-control" placeholder="Password"
+                    [ngClass]="{'is-invalid': password.errors && (password.touched || password.dirty)}">
                 <div class="invalid-feedback">
                     Password is required.
                 </div>
             </div>
             <div class="form-group">
                 <input type="password" formControlName="ConfirmPassword" class="form-control"
-                    placeholder="Confirm Password" [ngClass]="{'is-invalid': confirmPassword.errors && (confirmPassword.touched || confirmPassword.dirty)}">
-                    <div class="invalid-feedback">
-                        Confirm your password.
-                    </div>
+                    placeholder="Confirm Password"
+                    [ngClass]="{'is-invalid': confirmPassword.errors && (confirmPassword.touched || confirmPassword.dirty)}">
+                <div class="invalid-feedback">
+                    <div *ngIf="confirmPassword.errors?.required">Confirm your password.</div>
+                    <div *ngIf="confirmPassword.errors?.mustMatch">Passwords must match</div>
+                </div>
             </div>
         </div>
         <div>

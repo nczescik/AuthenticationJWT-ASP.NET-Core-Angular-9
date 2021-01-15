@@ -50,16 +50,17 @@ namespace WebAPI.Services.Services.Users
 
         public UserDto Authenticate(string username, string password)
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-                return null;
+            if (string.IsNullOrWhiteSpace(username)
+                || string.IsNullOrWhiteSpace(password))
+                throw new Exception("Username or password is incorrect");
 
             var user = _repository.GetDbSet().SingleOrDefault(x => x.UserName == username);
 
             if (user == null)
-                return null;
+                throw new Exception("User doesn't exist!"); ;
 
             if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+                throw new Exception("Incorrect password!"); ;
 
             UserDto userDto = new UserDto
             {
