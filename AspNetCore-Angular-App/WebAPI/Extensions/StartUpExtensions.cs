@@ -139,11 +139,7 @@ namespace WebAPI.Extensions
             services.AddMiniProfiler(options =>
             {
                 (options.Storage as MemoryCacheStorage).CacheDuration = TimeSpan.FromMinutes(60);
-                options.ColorScheme = StackExchange.Profiling.ColorScheme.Auto;
-
-                //options.TrackConnectionOpenClose = false;
-                //options.IgnoredPaths.Add(".js"); 
-                //options.IgnoredPaths.Add("sockjs-node");
+                options.TrackConnectionOpenClose = false;
             }).AddEntityFramework();
 
             return services;

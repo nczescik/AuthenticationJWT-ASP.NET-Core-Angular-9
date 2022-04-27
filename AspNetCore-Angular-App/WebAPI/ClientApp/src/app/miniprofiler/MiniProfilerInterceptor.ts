@@ -16,7 +16,7 @@ export class MiniProfilerInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       tap(evt => {
         if (evt instanceof HttpResponse) {
-          if (typeof MiniProfiler !== 'undefined') {
+          if (typeof MiniProfiler !== 'undefined' && evt.headers) {
             this.makeMiniProfilerRequests(evt.headers);
           }
         }

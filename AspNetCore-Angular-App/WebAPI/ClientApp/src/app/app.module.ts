@@ -14,7 +14,8 @@ import { AuthService } from './services/Authentication/auth.service';
 import { LoginComponent } from './users/authentication/login/login.component';
 import { TokenInterceptorSevice } from './services/Authentication/token-interceptor.service';
 import { ErrorInterceptorService } from './services/Errors/error-interceptor.service';
-import { MiniProfilerInterceptor, MiniProfilerModule } from 'ng-miniprofiler';
+// import { MiniProfilerModule, MiniProfilerInterceptor } from 'ng-miniprofiler';
+import { MiniProfilerInterceptor } from './miniprofiler/MiniProfilerInterceptor';
 
 @NgModule({
   declarations: [
@@ -32,15 +33,15 @@ import { MiniProfilerInterceptor, MiniProfilerModule } from 'ng-miniprofiler';
     FormsModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    MiniProfilerModule.forRoot({
-      baseUri: 'https://localhost:44343',
-      colorScheme: 'Auto',
-      maxTraces: 15,
-      position: 'BottomLeft',
-      toggleShortcut: 'Alt+M',
-      enabled: true,
-      enableGlobalMethod: true
-    }),
+    // MiniProfilerModule.forRoot({
+    //   baseUri: 'https://localhost:44343',
+    //   colorScheme: 'Auto',
+    //   maxTraces: 15,
+    //   position: 'BottomLeft',
+    //   toggleShortcut: 'Alt+M',
+    //   enabled: true,
+    //   enableGlobalMethod: true
+    // }),
   ],
   providers: [
     AuthService,
