@@ -44,7 +44,7 @@ namespace WebAPI
                 app.UseMiniProfilerExt()
                     .UseDeveloperExceptionPage()
                     .UseSwaggerExt()
-                    .UseCorsExt(Configuration);
+                    .UseCorsExt();
             }
             else
             {
