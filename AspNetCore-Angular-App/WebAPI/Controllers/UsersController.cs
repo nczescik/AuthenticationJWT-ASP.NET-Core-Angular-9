@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using WebAPI.DAL.Entities;
+using WebAPI.DAL.Interfaces;
 using WebAPI.Helpers;
 using WebAPI.Models.Users;
 using WebAPI.Services.Dto;
@@ -14,19 +19,22 @@ using WebAPI.Services.Services.Users;
 
 namespace WebAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : Controller
     {
         private readonly Func<IUserService> _userService;
+        private readonly Func<IRepository<User>> _userRepository;
         private readonly AppSettings _appSettings;
         public UsersController(
             Func<IUserService> userService,
+            Func<IRepository<User>> userRepository,
             IOptions<AppSettings> appSettings
             )
         {
             _userService = userService;
+            _userRepository = userRepository;
             _appSettings = appSettings.Value;
         }
 
@@ -53,8 +61,8 @@ namespace WebAPI.Controllers
 
             return Ok(new
             {
-                Id = user.UserId,
-                Username = user.UserName,
+                //Id = user.UserId,
+                //Username = user.UserName,
                 Token = tokenString
             });
         }
@@ -74,11 +82,38 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetUser/{userId}")]
-        public async Task<IActionResult> GetUser(long userId)
+        public IActionResult GetUser(long userId)
         {
-            var user = await _userService().GetUserByIdAsync(userId);
+            var users = _userRepository()
+                .GetDbSet()
+                .ToList();
 
-            return Ok(user);
+            var users2 = _userService()
+                 .GetUsersList();
+
+
+            //głupi przykład, ale przykład
+            //PrivateMethod(users);
+
+            return Json(new { });
+        }
+
+        private void PrivateMethod(List<User> users)
+        {
+            foreach (var user in users)
+            {
+                AnotherPrivateMethod(user);
+            }
+        }
+
+        private void AnotherPrivateMethod(User user)
+        {
+            //logika już tak złożona, że zapominamy o naszej wcześniej podciągniętej liście userów z repozytorium
+
+            //przykład redundacji zapytania
+            var users2 = _userService()
+                 .GetUsersList()
+                 .Where(u => u.UserId == user.Id);
         }
 
         [HttpDelete("Delete/{userId}")]

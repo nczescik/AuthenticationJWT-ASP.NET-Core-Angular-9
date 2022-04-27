@@ -16,7 +16,8 @@ export class AuthService {
   }
 
   login(data: any): Observable<any> {
-    return this.http.post(this.BaseUrl + '/Users/Login', data);
+    // return this.http.post(this.BaseUrl + '/Users/Login', data);
+    return this.http.get(this.BaseUrl + '/Users/GetUser/1');
   }
 
   saveToken(token: string){

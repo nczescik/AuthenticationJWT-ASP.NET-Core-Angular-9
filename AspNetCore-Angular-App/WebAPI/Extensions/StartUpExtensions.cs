@@ -12,6 +12,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using WebAPI.DAL;
+using WebAPI.DAL.Entities;
 using WebAPI.DAL.Interfaces;
 using WebAPI.DAL.Repositories;
 using WebAPI.Extensions;
@@ -26,6 +27,8 @@ namespace WebAPI.Extensions
         {
             services.AddScoped<ApplicationDbContext>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<Func<IRepository<User>>>(x => () => x.GetService<IRepository<User>>());
+            services.AddScoped<Func<IRepository<Address>>>(x => () => x.GetService<IRepository<Address>>());
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<Func<IUserService>>(x => () => x.GetService<IUserService>());
             return services;
@@ -43,7 +46,7 @@ namespace WebAPI.Extensions
 
         public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("Database")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseLazyLoadingProxies().UseSqlServer(configuration.GetConnectionString("Database")));
             return services;
         }
 
@@ -138,7 +141,9 @@ namespace WebAPI.Extensions
                 builder
                     .AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod());
+                    .AllowAnyMethod()
+                    //.WithExposedHeaders("x-miniprofiler-ids") //not needed from one of the last versions
+                    );
 
             return app;
         }

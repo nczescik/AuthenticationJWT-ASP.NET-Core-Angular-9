@@ -22,7 +22,7 @@ namespace WebAPI.DAL.Interfaces
 
         Task<long> AddAsync(T entity);
 
-        ValueTask<T> GetByIdAsync(long Id);
+        Task<T> GetByIdAsync(long Id);
 
         Task<IList<T>> GetAllAsync();
 

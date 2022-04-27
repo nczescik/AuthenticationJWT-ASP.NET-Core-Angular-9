@@ -23,14 +23,16 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe(data => {
-        this.authService.saveToken(data.token);
-      });
-      this.loginForm.reset();
-    } else {
-      this.validationService.validateAllFormFields(this.loginForm);
-    }
+    // if (this.loginForm.valid) {
+    //   this.authService.login(this.loginForm.value).subscribe(data => {
+    //     this.authService.saveToken(data.token);
+    //   });
+    //   this.loginForm.reset();
+    // } else {
+    //   this.validationService.validateAllFormFields(this.loginForm);
+    // }
+    
+    this.authService.login(this.loginForm.value).subscribe();
   }
 
   get username() {

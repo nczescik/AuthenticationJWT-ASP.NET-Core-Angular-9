@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ namespace WebAPI.Services.Services.Users
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _repository;
+        private readonly Func<IRepository<User>> _repository;
         public UserService(
-            IRepository<User> repository)
+            Func<IRepository<User>> repository)
         {
             _repository = repository;
         }
@@ -22,7 +23,7 @@ namespace WebAPI.Services.Services.Users
             if (string.IsNullOrWhiteSpace(userDto.Password))
                 throw new Exception("Password is required");
 
-            if (_repository.GetDbSet().Any(u => u.UserName == userDto.UserName))
+            if (_repository().GetDbSet().Any(u => u.UserName == userDto.UserName))
                 throw new Exception("Username \"" + userDto.UserName + "\" is already taken");
 
             byte[] passwordHash, passwordSalt;
@@ -35,7 +36,7 @@ namespace WebAPI.Services.Services.Users
                 PasswordSalt = passwordSalt
             };
 
-            return _repository.Add(user);
+            return _repository().Add(user);
         }
 
         public async Task<long> CreateUserAsync(UserDto userDto)
@@ -45,7 +46,7 @@ namespace WebAPI.Services.Services.Users
                 UserName = userDto.UserName
             };
 
-            return await _repository.AddAsync(user);
+            return await _repository().AddAsync(user);
         }
 
         public UserDto Authenticate(string username, string password)
@@ -54,7 +55,9 @@ namespace WebAPI.Services.Services.Users
                 || string.IsNullOrWhiteSpace(password))
                 throw new Exception("Username or password is incorrect");
 
-            var user = _repository.GetDbSet().SingleOrDefault(x => x.UserName == username);
+            var user = _repository()
+                .GetDbSet()
+                .FirstOrDefault(x => x.UserName == username);
 
             if (user == null)
                 throw new Exception("User doesn't exist!"); ;
@@ -73,19 +76,19 @@ namespace WebAPI.Services.Services.Users
 
         public void DeleteUser(long userId)
         {
-            var user = _repository.GetById(userId);
-            _repository.Delete(user);
+            var user = _repository().GetById(userId);
+            _repository().Delete(user);
         }
 
         public async Task DeleteUserAsync(long userId)
         {
-            var user = await _repository.GetByIdAsync(userId);
-            await _repository.DeleteAsync(user);
+            var user = await _repository().GetByIdAsync(userId);
+            await _repository().DeleteAsync(user);
         }
 
         public UserDto GetUserById(long userId)
         {
-            var user = _repository.GetById(userId);
+            var user = _repository().GetById(userId);
             var result = new UserDto
             {
                 UserId = user.Id,
@@ -97,7 +100,7 @@ namespace WebAPI.Services.Services.Users
 
         public async Task<UserDto> GetUserByIdAsync(long userId)
         {
-            var user = await _repository.GetByIdAsync(userId);
+            var user = await _repository().GetByIdAsync(userId);
             var result = new UserDto
             {
                 UserId = user.Id,
@@ -111,11 +114,28 @@ namespace WebAPI.Services.Services.Users
         {
             var result = new List<UserDto>();
 
-            foreach (var user in _repository.GetAll())
+            foreach (var user in _repository()
+                .GetDbSet()
+                .Include(x => x.Addresses)
+                .ThenInclude(x => x.Blocks))
             {
+                //tak, tak... nie chciało mi się wrzucać już automapper'a
+
+                var addresses = new List<AddressDto>();
+                foreach (var address in user.Addresses)
+                {
+                    addresses.Add(new AddressDto
+                    {
+                        AddressId = address.Id,
+                        Street = address.Street,
+                        Postcode = address.Postcode
+                    });
+                }
+
                 var userDto = new UserDto
                 {
-                    UserName = user.UserName
+                    UserName = user.UserName,
+                    Addresses = addresses
                 };
 
                 result.Add(userDto);
@@ -129,7 +149,7 @@ namespace WebAPI.Services.Services.Users
         {
             var result = new List<UserDto>();
 
-            foreach (var user in await _repository.GetAllAsync())
+            foreach (var user in await _repository().GetAllAsync())
             {
                 var userDto = new UserDto
                 {
@@ -149,7 +169,7 @@ namespace WebAPI.Services.Services.Users
                 UserName = userDto.UserName
             };
 
-            _repository.Update(user);
+            _repository().Update(user);
         }
 
         public async Task UpdateUserAsync(UserDto userDto)
@@ -160,7 +180,7 @@ namespace WebAPI.Services.Services.Users
                 UserName = userDto.UserName
             };
 
-            await _repository.UpdateAsync(user);
+            await _repository().UpdateAsync(user);
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

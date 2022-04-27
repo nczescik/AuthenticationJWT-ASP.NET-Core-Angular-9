@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,9 @@ namespace WebAPI.DAL.Repositories
 
         public long Add(T entity)
         {
-            var entityEntry = _dbContext.Add(entity);
+            _dbContext.Set<T>().Add(entity);
             _dbContext.SaveChanges();
-            return entityEntry.Entity.Id;
+            return entity.Id;
         }
 
         public void Delete(T entity)
@@ -39,7 +40,7 @@ namespace WebAPI.DAL.Repositories
             _dbContext.SaveChanges();
         }
 
-        public IQueryable<T> GetDbSet() => _dbContext.Set<T>();
+        public IQueryable<T> GetDbSet() => _dbContext.Set<T>().AsQueryable();
 
 
         #region Async methods
@@ -59,7 +60,7 @@ namespace WebAPI.DAL.Repositories
 
         public async Task<IList<T>> GetAllAsync() => await _dbContext.Set<T>().ToListAsync();
 
-        public ValueTask<T> GetByIdAsync(long Id) => _dbContext.Set<T>().FindAsync(Id);
+        public Task<T> GetByIdAsync(long Id) => _dbContext.Set<T>().FindAsync(Id);
 
         public async Task UpdateAsync(T entity)
         {

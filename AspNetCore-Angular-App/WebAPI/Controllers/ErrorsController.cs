@@ -5,7 +5,7 @@ using System;
 namespace WebApi.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class ErrorsController : ControllerBase
+    public class ErrorsController : Controller
     {
         [Route("error")]
         public IActionResult Error()
