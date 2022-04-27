@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Profiling.Storage;
-using System;
 using WebAPI.DAL;
 using WebAPI.Extensions;
 
@@ -30,38 +28,11 @@ namespace WebAPI
                 .AddJwt(Configuration)
                 .AddSwagger()
                 .AddCors()
+                .AddMiniProfilerExt()
                 .AddControllers()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
-
-            services.AddMiniProfiler(options =>
-            {
-                (options.Storage as MemoryCacheStorage).CacheDuration = TimeSpan.FromMinutes(60);
-
-                // (Optional) Control which SQL formatter to use, InlineFormatter is the default
-                //options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
-
-                // (Optional) You can disable "Connection Open()", "Connection Close()" (and async variant) tracking.
-                // (defaults to true, and connection opening/closing is tracked)
-                options.TrackConnectionOpenClose = false;
-
-                // (Optional) Use something other than the "light" color scheme.
-                // (defaults to "light")
-                options.ColorScheme = StackExchange.Profiling.ColorScheme.Auto;
-
-                // The below are newer options, available in .NET Core 3.0 and above:
-
-                // (Optional) You can disable MVC filter profiling
-                // (defaults to true, and filters are profiled)
-                //options.EnableMvcFilterProfiling = false;
-
-                //// (Optional) You can disable MVC view profiling
-                //// (defaults to true, and views are profiled)
-                //options.EnableMvcViewProfiling = false;
-                //options.IgnoredPaths.Add(".js"); 
-                //options.IgnoredPaths.Add("sockjs-node");
-            }).AddEntityFramework();
 
         }
 
@@ -70,7 +41,7 @@ namespace WebAPI
         {
             if (env.IsDevelopment())
             {
-                app.UseMiniProfiler()
+                app.UseMiniProfilerExt()
                     .UseDeveloperExceptionPage()
                     .UseSwaggerExt()
                     .UseCorsExt(Configuration);
@@ -78,8 +49,8 @@ namespace WebAPI
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts()
-                    .UseSpaStaticFiles();
+                app.UseHsts();
+                //.UseSpaStaticFiles();
             }
 
             app.UseExceptionHandler("/Error")
@@ -88,8 +59,8 @@ namespace WebAPI
                 .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()
-                .UserEndpoints()
-                .UseSpa(env);
+                .UserEndpoints();
+            //.UseSpa(env);
 
             applicationDbContext.Database.EnsureCreated();
         }

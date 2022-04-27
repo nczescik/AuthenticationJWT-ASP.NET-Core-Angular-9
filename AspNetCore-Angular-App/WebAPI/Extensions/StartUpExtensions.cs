@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Profiling.Storage;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,6 +134,39 @@ namespace WebAPI.Extensions
             return services;
         }
 
+        public static IServiceCollection AddMiniProfilerExt(this IServiceCollection services)
+        {
+            services.AddMiniProfiler(options =>
+            {
+                (options.Storage as MemoryCacheStorage).CacheDuration = TimeSpan.FromMinutes(60);
+
+                // (Optional) Control which SQL formatter to use, InlineFormatter is the default
+                //options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
+
+                // (Optional) You can disable "Connection Open()", "Connection Close()" (and async variant) tracking.
+                // (defaults to true, and connection opening/closing is tracked)
+                options.TrackConnectionOpenClose = false;
+
+                // (Optional) Use something other than the "light" color scheme.
+                // (defaults to "light")
+                options.ColorScheme = StackExchange.Profiling.ColorScheme.Auto;
+
+                // The below are newer options, available in .NET Core 3.0 and above:
+
+                // (Optional) You can disable MVC filter profiling
+                // (defaults to true, and filters are profiled)
+                //options.EnableMvcFilterProfiling = false;
+
+                //// (Optional) You can disable MVC view profiling
+                //// (defaults to true, and views are profiled)
+                //options.EnableMvcViewProfiling = false;
+                //options.IgnoredPaths.Add(".js"); 
+                //options.IgnoredPaths.Add("sockjs-node");
+            }).AddEntityFramework();
+
+            return services;
+        }
+
         public static IApplicationBuilder UseCorsExt(this IApplicationBuilder app, IConfiguration configuration)
         {
             //var appSettingsSection = configuration.GetSection("AppSettings");
@@ -142,8 +177,7 @@ namespace WebAPI.Extensions
                     .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    //.WithExposedHeaders("x-miniprofiler-ids") //not needed from one of the last versions
-                    );
+                    .WithExposedHeaders("x-miniprofiler-ids"));
 
             return app;
         }
@@ -183,6 +217,33 @@ namespace WebAPI.Extensions
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "TestService");
                 });
+            return app;
+        }
+
+        public static IApplicationBuilder UseMiniProfilerExt(this IApplicationBuilder app)
+        {
+            //Potrzebne, aby działało na innym originie niż hostowana apka
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path.StartsWithSegments(new PathString("/mini-profiler-resources"))) // Must match RouteBasePath
+                {
+                    if (context.Request.Headers.TryGetValue("Origin", out var origin))
+                    {
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", origin);
+                        if (context.Request.Method == "OPTIONS")
+                        {
+                            context.Response.StatusCode = 200;
+                            context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
+                            context.Response.Headers.Add("Access-Control-Allow-Methods", "OPTIONS, GET");
+                            await context.Response.CompleteAsync();
+                            return;
+                        }
+                    }
+                }
+
+                await next();
+            }).UseMiniProfiler();
+
             return app;
         }
     }
